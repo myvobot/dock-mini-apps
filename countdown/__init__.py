@@ -12,13 +12,12 @@ label = None
 DEFAULT_REMAINDER = 30
 remainder = DEFAULT_REMAINDER
 
-app_manager = None
+app_mgr = None
 last_recorded_time = 0
 countdown_is_running = False
 
 def get_settings_json():
     return {
-        "category": "Other",
         "form": [{
             "type": "input",
             "default": str(DEFAULT_REMAINDER),
@@ -32,7 +31,7 @@ def reset_countdown():
     global remainder, countdown_is_running, last_recorded_time
     last_recorded_time = 0
     countdown_is_running = False
-    remainder = int(app_manager.config().get("remainder", DEFAULT_REMAINDER))
+    remainder = int(app_mgr.config().get("remainder", DEFAULT_REMAINDER))
 
 def update_label():
     global label, remainder
@@ -48,10 +47,9 @@ def event_handler(event):
             last_recorded_time = time.ticks_ms()
             countdown_is_running = not countdown_is_running
 
-async def on_boot(app_mgr):
-    """Called right after system boot."""
-    global app_manager
-    app_manager = app_mgr
+async def on_boot(apm):
+    global app_mgr
+    app_mgr = apm
 
 async def on_stop():
     print('on stop')
