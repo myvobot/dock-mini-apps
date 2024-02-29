@@ -22,5 +22,6 @@ async def on_start():
     global label
     # Create and initialize LVGL widgets
     label = lv.label(scr)
+    label.center()
     label.set_text(NAME)
     lv.scr_load(scr)
