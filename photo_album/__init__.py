@@ -3,6 +3,8 @@ import lvgl as lv
 # App Name
 NAME = "Photo Album"
 
+CAN_BE_AUTO_SWITCHED = True
+
 # App Icon
 ICON = "A:apps/photo_album/resources/icon.png"
 

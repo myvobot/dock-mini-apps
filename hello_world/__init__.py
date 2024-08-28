@@ -3,6 +3,8 @@ import lvgl as lv
 # Name of the App
 NAME = "Hello World"
 
+CAN_BE_AUTO_SWITCHED = True
+
 # Initialize LVGL objects
 scr = lv.obj()
 label = None
