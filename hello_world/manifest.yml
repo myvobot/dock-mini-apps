@@ -1,0 +1,18 @@
+application:
+  name: Hello World
+  version: 1.0.0
+  description: This is a straightforward application that renders simple text on the screen and demonstrates the basic method of creating interactive applications using the LVGL graphics library.
+  author: Vobot
+  author_email: support@getvobot.com
+  bugs: https://github.com/myvobot/dock-mini-apps/issues
+  repository: https://github.com/myvobot/dock-mini-apps/tree/main/hello_world
+  licenses: MIT
+
+system_requirements:
+  minimum_version: 1.1.0
+  compatible_devices:
+    - MiniDock
+
+files:
+  include:
+    - __init__.py
