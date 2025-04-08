@@ -1,0 +1,21 @@
+application:
+  name: Widgets Demo
+  version: 1.0.0
+  description: This is a sample application that showcases some LVGL widgets, designed to help you flexibly apply these elements!
+  author: Vobot
+  author_email: support@getvobot.com
+  bugs: https://github.com/myvobot/dock-mini-apps/issues
+  repository: https://github.com/myvobot/dock-mini-apps/tree/main/widgets_demo
+  licenses: MIT
+
+attributes:
+    enable_auto_carousel: true
+
+system_requirements:
+  minimum_version: 1.1.0
+  compatible_devices:
+    - MiniDock
+
+files:
+  include:
+    - __init__.py
