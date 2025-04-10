@@ -1,4 +1,4 @@
-# Photo Album
+# Calendar View
 
 This is an application that allows users to view the calendar for the past and future five years by rotating an encoder.
 

@@ -1,4 +1,4 @@
-# Photo Album
+# Stock View
 
 This application displays basic information for multiple stocks with the following features:
 
