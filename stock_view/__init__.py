@@ -4,7 +4,7 @@ import clocktime
 import lvgl as lv
 import peripherals
 from micropython import const
-from .service import get_stock_detials
+from .service import get_stock_details
 
 NAME = "Stock View" # App name
 CAN_BE_AUTO_SWITCHED = True # Whether the App supports auto-switching in carousel mode
@@ -44,7 +44,7 @@ _scr = None  # Initialize screen variable
 _app_mgr = None  # Initialize app manager variable
 _stock_count = 0 # Number of stock information items currently displayed
 _last_updated = 0 # Timestamp of the last stock information update
-_stock_detials = [] # Current stock information for multiple stocks
+_stock_details = [] # Current stock information for multiple stocks
 _stock_symbols = _DEFAULT_STOCK_SYMBOLS # Current stock configuration
 
 def get_settings_json():
@@ -67,7 +67,7 @@ def get_settings_json():
 
 def _load_config():
     # Load application configuration
-    global _stock_symbols, _last_updated, _stock_detials
+    global _stock_symbols, _last_updated, _stock_details
     stock_cfg = _app_mgr.config()
     symbols = stock_cfg.get("stocks", None)
     if symbols:
@@ -75,14 +75,14 @@ def _load_config():
         temp_symbols = [x.strip() for x in symbols.strip(",").split(",") ]
         if _stock_symbols != temp_symbols:
             _last_updated = 0
-            _stock_detials = []
+            _stock_details = []
             _stock_symbols = temp_symbols
         print(f"{NAME}: {_stock_symbols}")
         return True
     elif symbols == "":
         # Stock configuration is empty, prompt user to configure
         _stock_symbols = []
-        _stock_detials = []
+        _stock_details = []
         _app_mgr.error(
             "Stocks View App Not Configured",
             "Please go to the application settings to configure stock information.",
@@ -150,7 +150,7 @@ async def display_single_stock(parent, price_info):
         arrow = lv.SYMBOL.DOWN if diff_amount < 0 else lv.SYMBOL.UP
         prefix = "-" + currency if diff_amount < 0 else "+" + currency
 
-        if diff_amount == 0: _prefix = ""
+        if diff_amount == 0: prefix = ""
         if diff_amount < 0: diff_amount = -diff_amount
 
         # Determine how many decimal places to display
@@ -256,7 +256,7 @@ async def display_multiple_stocks():
     # remove the scroll bar
     main_page.set_scrollbar_mode(lv.SCROLLBAR_MODE.OFF)
 
-    for price_info in _stock_detials:
+    for price_info in _stock_details:
         # Try to render stock information
         try:
             menu_cont = await display_single_stock(main_page, price_info)
@@ -309,7 +309,7 @@ async def on_start():
     loading_label.set_style_text_color(lv.color_hex3(0xFFF), lv.PART.MAIN)
 
     # If stock information already exists, display it directly
-    if _stock_detials: await display_multiple_stocks()
+    if _stock_details: await display_multiple_stocks()
 
 async def on_stop():
     """Clean up the screen and leave the app when it stops."""
@@ -328,7 +328,7 @@ async def on_running_foreground():
     """
     Handle actions when the app is running in the foreground.
     """
-    global _last_updated, _stock_detials
+    global _last_updated, _stock_details
     # When no stock information is displayed, no need to update
     if _scr.get_child_count() < 1: return
 
@@ -339,7 +339,7 @@ async def on_running_foreground():
     if now - _last_updated < _STOCK_UPDATE_INTERVAL: return
 
     # Time interval reached, fetch stock information again
-    _stock_detials = await get_stock_detials(_stock_symbols)
+    _stock_details = await get_stock_details(_stock_symbols)
     # Redraw stock information
     await display_multiple_stocks()
     _last_updated = now

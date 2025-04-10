@@ -29,10 +29,10 @@ async def fetch_stock_info(symbols="MSFT"):
 
     return {}
 
-async def get_stock_detials(symbols):
+async def get_stock_details(symbols):
     # Fetch stock details information
-    detials = []
-    if not symbols: return detials
+    details = []
+    if not symbols: return details
 
     if _USE_SIMULATED_DATA:
         res = generate_mock_stock_info(symbols)
@@ -43,6 +43,6 @@ async def get_stock_detials(symbols):
         # No symbol field in data? Get from symbols
         if item.get("symbol", None) is None:
             item["symbol"], item["shortName"] = symbols[index].split(":")
-        detials.append(item)
+        details.append(item)
 
-    return detials
+    return details
