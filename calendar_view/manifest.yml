@@ -1,0 +1,21 @@
+application:
+  name: Calendar View
+  version: 1.0.0
+  description: This is an application that allows users to view the calendar for the past and future five years by rotating an encoder.
+  author: Vobot
+  author_email: support@getvobot.com
+  bugs: https://github.com/myvobot/dock-mini-apps/issues
+  repository: https://github.com/myvobot/dock-mini-apps/tree/main/calendar_view
+  licenses: MIT
+
+attributes:
+    enable_auto_carousel: true
+
+system_requirements:
+  minimum_version: 1.1.0
+  compatible_devices:
+    - MiniDock
+
+files:
+  include:
+    - __init__.py
