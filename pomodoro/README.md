@@ -1,6 +1,6 @@
 # Pomodoro Timer
 
-The Pomodoro Timer app is designed to help users improve work efficiency by combining focused work sessions with short breaks, promoting better time management. The app offers three modes: Focus Mode, Short Break Mode, and Long Break Mode, allowing users to choose the mode that best suits their needs.
+The Pomodoro Timer app is designed to help users improve work efficiency by combining focused work sessions with short breaks, thereby promoting better time management. The app offers three modes: Focus Mode, Short Break Mode, and Long Break Mode.
 
 ### Mode Descriptions
 
