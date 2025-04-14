@@ -25,7 +25,7 @@ Users can customize the duration of each mode in the app's settings to fit their
 
 ### Re-Entry Prompt
 
-If users exit the app while a countdown is still running, they will receive a prompt upon re-entering the app, asking whether they would like to continue the previous countdown. This feature ensures a seamless transition between work and breaks, maximizing efficiency.
+If users exit the app while a countdown is still running, they will receive a prompt upon re-entering the app, asking whether they would like to continue the previous countdown.
 
 ![Screenshot](screenshot.jpg)
 
