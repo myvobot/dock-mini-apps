@@ -1,0 +1,22 @@
+application:
+  name: Pomodoro Timer
+  version: 1.0.0
+  description: This is a Pomodoro Timer app that helps users manage their time efficiently through clear modes and flexible settings.
+  author: Vobot
+  author_email: support@getvobot.com
+  bugs: https://github.com/myvobot/dock-mini-apps/issues
+  repository: https://github.com/myvobot/dock-mini-apps/tree/main/pomodoro
+  licenses: MIT
+
+attributes:
+    enable_auto_carousel: false
+
+system_requirements:
+  minimum_version: 1.1.0
+  compatible_devices:
+    - MiniDock
+
+files:
+  include:
+    - __init__.py
+    - base.py
