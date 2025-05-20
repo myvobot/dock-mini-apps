@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous"/>
+    <title>Sensor Management</title>
+
+    <!-- Page Styles -->
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+        }
+
+        .navbar {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 10px 20px;
+            background-color: #f5f5f5;
+            display: flex;
+            align-items: center;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        select {
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+
+        select:disabled {
+          background-color: #e0e0e0;
+          color: #999;
+          cursor: not-allowed;
+        }
+
+        .btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.2s;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+        .btn:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
+
+        .btn-primary {
+            background-color: #3498db;
+            color: white;
+        }
+
+        .btn-danger {
+            background-color: #e74c3c;
+            color: white;
+        }
+
+        .btn-warning {
+            background-color: #f39c12;
+            color: white;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+        }
+
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+
+        .editable {
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 3px;
+        }
+
+        .editable:hover {
+            background-color: #f0f0f0;
+        }
+
+        .editable::after {
+            content: "✏️";
+            margin-left: 5px;
+            font-size: 12px;
+            opacity: 0.5;
+        }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+        }
+
+        .modal-content {
+            background: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            width: 40%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .modal-body > div {
+            margin-bottom: 10px;
+        }
+
+        .modal-footer {
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        .modal-footer .btn {
+            margin-left: 10px;
+        }
+
+        .scan-results-container {
+            max-height: 200px;
+            overflow-y: auto;
+            margin-top: 10px;
+            border: 1px solid #eee;
+            border-radius: 4px;
+        }
+
+        .card-view-panel {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 10px 20px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+        }
+
+        .card-view-panel .field label {
+            margin-right: 10px;
+            margin-bottom: 6px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .card-view-panel .field select {
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            background-color: #fff;
+            margin-bottom: 6px;
+            color: #333;
+        }
+
+        .card-view-panel .help-text {
+            margin-top: 8px;
+            color: #666;
+            font-size: 12px;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation bar -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="../../apps">
+                <img src="https://getvobot.com/img/vobot-logo.png" alt="Logo" width="107.4" height="24"/>
+            </a>
+            <div class="collapse navbar-collapse">
+                <div class="navbar-nav">
+                    <a class="nav-link active" aria-current="page" href="../../apps">Home</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main content area -->
+    <div class="card-view-panel">
+        <div class="field">
+            <label for="display-count">Card View:</label>
+            <select id="display-count">
+                <option value="1">Single</option>
+                <option value="2">Double</option>
+                <option value="4" selected>Quad</option>
+            </select>
+            <div class="help-text">
+                This configuration option applies to device display and is used to select the number of sensors to display at once: 1, 2, or 4 sensors.
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <div>
+                <button class="btn btn-primary" id="add-device">Add Device</button>
+            </div>
+        </div>
+
+        <!-- Sensor List Table -->
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Brand</th>
+                    <th>Nickname</th>
+                    <th>Model</th>
+                    <th>Last Seen</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="sensor-table-body">
+                <tr>
+                    <td colspan="6" style="color: #666;"> Loading sensor list... </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Add Device Modal -->
+    <div id="add-device-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add Device</h3>
+                <span id="close-modal" style="cursor:pointer;font-size:20px;">×</span>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <label for="product-select">Product Name:</label>
+                    <select id="product-select">
+                        <option value="">Please select</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="model-select">Device Model:</label>
+                    <select id="model-select">
+                        <option value="">Please select</option>
+                    </select>
+                </div>
+                <div>
+                    <button id="scan-btn" class="btn btn-warning">Start Scan</button>
+                </div>
+                <div id="selection-info" style="margin-bottom:10px; font-weight:bold;">
+                    You can select <span id="remaining-number">5</span> more devices
+                </div>
+                <div class="scan-results-container">
+                    <table>
+                        <thead>
+                            <tr><th></th><th>Device ID</th><th>Signal</th></tr>
+                        </thead>
+                        <tbody id="scan-results-body">
+                            <!-- Scan results will be inserted here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="cancel-btn" class="btn btn-danger">Cancel</button>
+                <button id="add-confirm-btn" class="btn btn-primary">Add</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts: event handling and AJAX logic -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Variables and DOM elements
+            let selectedConfigIds = new Set();
+            let productInfoMap = {};
+            let MAX_SELECTABLE = 8;
+            let selectedCount = 0;
+
+            const tbody = document.getElementById('sensor-table-body');
+            const displaySelect = document.getElementById('display-count');
+            const modal = document.getElementById('add-device-modal');
+            const productSelect = document.getElementById('product-select');
+            const modelSelect = document.getElementById('model-select');
+            const scanBtn = document.getElementById('scan-btn');
+            const resultsBody = document.getElementById('scan-results-body');
+            const closeModalBtn = document.getElementById('close-modal');
+            const cancelBtn = document.getElementById('cancel-btn');
+            const addConfirmBtn = document.getElementById('add-confirm-btn');
+            const remainingNumber = document.getElementById('remaining-number');
+
+            // Fetch the maximum number of selectable devices
+            fetch('/sensor_app/get_max_selectable')
+                .then(res => res.ok ? res.json() : Promise.reject(res.statusText))
+                .then(data => {
+                    MAX_SELECTABLE = data.maxSelectable;
+                    updateRemaining();
+                })
+                .catch(err => {
+                    console.error('Failed to fetch max selectable devices:', err);
+                    MAX_SELECTABLE = 8;
+                    updateRemaining();
+                });
+
+            // Utility to count currently configured sensors
+            function getExistingSensorsCount() {
+                return tbody.querySelectorAll('tr[data-id]').length;
+            }
+
+            // Update the "remaining devices" display
+            function updateRemaining() {
+                const existing = getExistingSensorsCount();
+                const remaining = MAX_SELECTABLE - existing - selectedCount;
+                remainingNumber.textContent = remaining >= 0 ? remaining : 0;
+            }
+
+            updateRemaining();
+
+            // Handle nickname editing and persist to server
+            function updateContent(input) {
+                const td = input.parentElement;
+                const tr = td.parentElement;
+                const sensorId = tr.dataset.id;
+                const newNickname = input.value.trim();
+                const oldNickname = td.getAttribute('data-old') || td.textContent;
+
+                // Update the UI immediately
+                td.textContent = newNickname;
+
+                // Send update request
+                fetch('/sensor_app/nickname', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ sensorId, nickname: newNickname })
+                })
+                .then(res => {
+                    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                    return res.json();
+                })
+                .then(data => {
+                    console.log('Nickname updated successfully:', data);
+                    td.setAttribute('data-old', newNickname);
+                })
+                .catch(err => {
+                    console.error('Nickname update failed:', err);
+                    alert('Failed to update nickname. Please try again.');
+                    td.textContent = oldNickname;
+                });
+            }
+
+            // Render table rows for a list of sensors
+            function renderSensors(sensors) {
+                if (!Array.isArray(sensors) || sensors.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6">No sensors available.</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = sensors.map(sensor => `
+                    <tr data-id="${sensor.sensorId}">
+                        <td>${sensor.sensorId}</td>
+                        <td>${sensor.brand}</td>
+                        <td class="editable">${sensor.nickname}</td>
+                        <td>${sensor.model}</td>
+                        <td>${sensor.lastSeen}</td>
+                        <td class="actions">
+                            <button class="btn btn-warning clear-cache">Clear Cache</button>
+                            <button class="btn btn-danger">Delete</button>
+                        </td>
+                    </tr>
+                `).join('');
+                updateRemaining();
+                attachRowEventListeners();
+                selectedConfigIds = new Set(sensors.map(s => s.sensorId));
+            }
+
+            // Attach event listeners for edit, delete, and clear-cache actions
+            function attachRowEventListeners() {
+                // Edit nickname on click
+                document.querySelectorAll('.editable').forEach(element => {
+                    element.setAttribute('data-old', element.textContent);
+
+                    element.addEventListener('click', function() {
+                        if (this.querySelector('input')) return;
+
+                        const current = this.textContent;
+                        this.innerHTML = '';
+
+                        const input = document.createElement('input');
+                        input.value = current;
+                        input.style.width = '100%';
+                        input.style.padding = '5px';
+                        this.appendChild(input);
+
+                        input.setSelectionRange(current.length, current.length);
+                        input.focus();
+
+                        input.addEventListener('blur', () => updateContent(input));
+                        input.addEventListener('keypress', e => {
+                            if (e.key === 'Enter') input.blur();
+                        });
+                    });
+                });
+
+                // Delete sensor
+                document.querySelectorAll('.btn-danger').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const tr = this.closest('tr');
+                        const sensorId = tr.dataset.id;
+
+                        if (!confirm(`Are you sure you want to delete sensor ID=${sensorId}?`)) return;
+
+                        fetch('/sensor_app/delete_sensor', {
+                            method: 'DELETE',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ sensorId })
+                        })
+                        .then(res => {
+                            if (!res.ok) throw new Error(res.status);
+                            return res.json();
+                        })
+                        .then(() => {
+                            tr.remove();
+                        })
+                        .catch(err => {
+                            console.error('Delete failed', err);
+                            alert('Delete failed. Please try again.');
+                        });
+                    });
+                });
+
+                // Clear cache for a sensor
+                document.querySelectorAll('.clear-cache').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const tr = this.closest('tr');
+                        const sensorId = tr.dataset.id;
+                        const name = tr.querySelector('.editable').textContent;
+                        if (!sensorId) return;
+
+                        if (!confirm(`Are you sure you want to clear the cache for "${name}"?`)) return;
+
+                        btn.disabled = true;
+                        fetch('/sensor_app/clear_cache', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ sensorId })
+                        })
+                        .then(res => {
+                            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                            return res.json();
+                        })
+                        .then(() => alert('Cache cleared'))
+                        .catch(err => {
+                            console.error('Failed to clear cache:', err);
+                            alert('Failed to clear cache, please try again');
+                        })
+                        .finally(() => {
+                            btn.disabled = false;
+                        });
+                    });
+                });
+            }
+
+            // Load and apply saved card view settings
+            fetch('/sensor_app/card_view')
+                .then(res => res.ok ? res.json() : Promise.reject(`HTTP ${res.status}`))
+                .then(data => {
+                    if (data && [1,2,4].includes(data.displayCount)) {
+                        displaySelect.value = data.displayCount;
+                    }
+                })
+                .catch(err => console.error('Failed to load card view settings:', err));
+
+            // Fetch and display existing sensors
+            fetch('/sensor_app/get_sensors')
+                .then(res => res.json())
+                .then(data => renderSensors(data.sensors))
+                .catch(err => {
+                    console.error(err);
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="6" style="color:red;">
+                                Failed to load data. Please refresh the page.
+                            </td>
+                        </tr>`;
+                });
+
+            // Handle card view changes
+            displaySelect.addEventListener('change', function() {
+                const count = parseInt(this.value, 10);
+
+                fetch('/sensor_app/card_view', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ displayCount: count })
+                })
+                .then(res => res.ok ? res.json() : Promise.reject(`Network error: ${res.status}`))
+                .then(data => console.log('Card view updated:', data))
+                .catch(err => {
+                    console.error('Failed to update card view:', err);
+                    alert('Failed to update view layout. Please try again later.');
+                });
+            });
+
+            // Populate model dropdown when product changes
+            productSelect.addEventListener('change', () => {
+                resultsBody.innerHTML = '';
+                selectedCount = 0;
+                updateRemaining();
+
+                modelSelect.innerHTML = '<option value="">Please select</option>';
+                const models = productInfoMap[productSelect.value] || [];
+                models.forEach(item => {
+                    const [modelName] = Object.keys(item);
+                    const modelValue = item[modelName];
+                    const opt = document.createElement('option');
+                    opt.text = modelName;
+                    opt.value = modelValue;
+                    modelSelect.add(opt);
+                });
+            });
+
+            // Reset scan results when model changes
+            modelSelect.addEventListener('change', () => {
+                resultsBody.innerHTML = '';
+                selectedCount = 0;
+                updateRemaining();
+            });
+
+            // Open "Add Device" modal and load product info
+            document.getElementById('add-device').addEventListener('click', async () => {
+                updateRemaining();
+                modal.style.display = 'flex';
+
+                // Load product info only once
+                if (Object.keys(productInfoMap).length === 0) {
+                    try {
+                        const res = await fetch('/sensor_app/get_product_info');
+                        if (!res.ok) throw new Error(res.statusText);
+
+                        productInfoMap = await res.json();
+
+                        productSelect.innerHTML = '<option value="">Please select</option>';
+                        Object.keys(productInfoMap).forEach(productName => {
+                            productSelect.add(new Option(productName, productName));
+                        });
+                    } catch (err) {
+                        console.error('Failed to load product info', err);
+                        alert('Failed to load product information');
+                    }
+                }
+            });
+
+            // Bluetooth scan for new devices
+            scanBtn.addEventListener('click', async () => {
+                const productName = productSelect.value;
+                const modelId = parseInt(modelSelect.value, 10);
+
+                if (!productName || !modelId) {
+                    return alert('Please select both product and model');
+                }
+
+                resultsBody.innerHTML = '';
+                selectedCount = 0;
+                updateRemaining();
+
+                // Disable buttons during scan
+                scanBtn.disabled = true;
+                cancelBtn.disabled = true;
+                modelSelect.disabled = true;
+                addConfirmBtn.disabled = true;
+                productSelect.disabled = true;
+                scanBtn.textContent = 'Scanning...';
+
+                try {
+                    const res = await fetch('/sensor_app/ble_scan', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ productName, modelId })
+                    });
+
+                    if (!res.ok) throw new Error(`Network error: ${res.status}`);
+
+                    const result = await res.json();
+                    const sensorsObj = result.sensors || {};
+                    const allDevices = Object.entries(sensorsObj)
+                        .map(([sensorId, info]) => ({ sensorId, rssi: info.rssi }));
+                    const devices = allDevices.filter(dev => !selectedConfigIds.has(dev.sensorId));
+                    devices.sort((a, b) => b.rssi - a.rssi);
+
+                    if (devices.length === 0) {
+                        resultsBody.innerHTML = '<tr><td colspan="3">No devices found</td></tr>';
+                    } else {
+                        devices.forEach(({sensorId, rssi}) => {
+                            const row = document.createElement('tr');
+                            row.innerHTML = `
+                                <td><input type="checkbox" class="device-select"></td>
+                                <td>${sensorId}</td>
+                                <td>${rssi}</td>
+                            `;
+
+                            // Handle individual device selection
+                            const cb = row.querySelector('.device-select');
+                            cb.addEventListener('change', () => {
+                                if (cb.checked) {
+                                    if (selectedCount + getExistingSensorsCount() >= MAX_SELECTABLE) {
+                                        cb.checked = false;
+                                        return alert(`You can select a maximum of ${MAX_SELECTABLE} devices`);
+                                    }
+                                    selectedCount++;
+                                } else {
+                                    selectedCount--;
+                                }
+                                updateRemaining();
+                            });
+
+                            resultsBody.appendChild(row);
+                        });
+                    }
+                } catch (err) {
+                    console.error('Scan failed', err);
+                    alert('Bluetooth scan error: ' + err.message);
+                } finally {
+                    // Restore controls
+                    scanBtn.disabled = false;
+                    cancelBtn.disabled = false;
+                    modelSelect.disabled = false;
+                    addConfirmBtn.disabled = false;
+                    productSelect.disabled = false;
+                    scanBtn.textContent = 'Start Scan';
+                }
+            });
+
+            // Close modal handlers
+            [closeModalBtn, cancelBtn].forEach(btn =>
+                btn.addEventListener('click', () => modal.style.display = 'none')
+            );
+
+            // Confirm and add selected devices to backend
+            addConfirmBtn.addEventListener('click', async () => {
+                const productName = productSelect.value;
+                const modelId = parseInt(modelSelect.value, 10);
+
+                if (!productName || !modelId) {
+                    return alert('Please select both product and model');
+                }
+
+                const sensorIds = Array.from(document.querySelectorAll('.device-select:checked'))
+                    .map(cb => cb.closest('tr').cells[1].textContent);
+
+                if (sensorIds.length === 0) {
+                    return alert('Please select at least one device');
+                }
+
+                try {
+                    const res = await fetch('/sensor_app/add_sensors', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ productName, modelId, sensorIds })
+                    });
+
+                    if (!res.ok) throw new Error(res.status);
+
+                    alert('Devices added successfully');
+                    modal.style.display = 'none';
+                    resultsBody.innerHTML = '';
+                    selectedCount = 0;
+                    updateRemaining();
+
+                    // Refresh sensor list
+                    fetch('/sensor_app/get_sensors')
+                    .then(r => r.json())
+                    .then(data => renderSensors(data.sensors));
+                } catch (err) {
+                    console.error('Failed to add devices', err);
+                    alert('Failed to add devices. Please try again.');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
