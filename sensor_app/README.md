@@ -17,6 +17,7 @@ Sensor App is an application for viewing measurement information from specified 
 
 ## Directory Structure
 
+```bash
 sensor_app/
 ├── asset/ # For storing resource files, such as .html files
 ├── bluetooth/ # Bluetooth scanning module
@@ -26,6 +27,7 @@ sensor_app/
 ├── `__init__.py` # App entry point
 ├── `base.py` # Main process handling module
 ├── `routes.py` # Route configuration and corresponding functions
+```
 
 ## product Directory Description
 
