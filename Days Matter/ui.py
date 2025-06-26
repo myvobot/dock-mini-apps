@@ -3,6 +3,33 @@ from . import base
 
 app_mgr = None
 
+STYLES = {"light": {"text": 0x111111,
+                    "bg": 0xFFFFFF,
+                    "tip":0xC0C0C0,
+                    "days": 0x303030,
+                    "selected": 0xCBCBCB,
+                    "list_container": 0xFFFFFF,
+                    "parent_bg": 0xEFEFEF,
+                    "focused": 0xCBCBCB,
+                    "defocused":0xFFFFFF,
+                    "list_line": 0x000000},
+          "dark": {"text": 0xFFFFFF,
+                   "bg": 0x111111,
+                   "tip":0xC0C0C0,
+                   "days": 0xE0E0E0,
+                   "selected": 0x404040,
+                   "list_container": 0x000000,
+                   "parent_bg": 0x1F1F1F,
+                   "focused": 0x404040,
+                   "defocused":0x1B1B1B,
+                   "list_line": 0xFFFFFF}}
+
+PAST_DAYS_COLOR = 0xFF8C00
+PAST_DAYS_COLOR_LIGHT = 0xFFA500
+CURRENT_DAYS_COLOR = 0x1E90FF
+CURRENT_DAYS_COLOR_LIGHT = 0x00A5FF
+
+
 async def show_days_matter(parent, name, days, time_tuple, handle_event_cb):
     """
     Display detailed view for a single date event.
@@ -16,17 +43,18 @@ async def show_days_matter(parent, name, days, time_tuple, handle_event_cb):
     """
     if parent: parent.clean()
     app_mgr.leave_root_page()
+    style = app_mgr.config().get("style", "light")
 
     # Determine display style based on whether event is past or future
     if days < 0:
         # Past event - orange theme
-        name_obj_color = lv.color_hex(0xFF8C00)
+        name_obj_color = lv.color_hex(PAST_DAYS_COLOR)
         time_tuple_text = f'Start Date: {time_tuple[0]}-{time_tuple[1]}-{time_tuple[2]}'
         tip_text = f"It has been {abs(days)} days since the {name} started."
         days = abs(days)
     else:
         # Future event or today - blue theme
-        name_obj_color = lv.color_hex(0x1E90FF)
+        name_obj_color = lv.color_hex(CURRENT_DAYS_COLOR)
         time_tuple_text = f'Target Day: {time_tuple[0]}-{time_tuple[1]}-{time_tuple[2]}'
         if days == 0:
             tip_text = f"Today is {name}."
@@ -40,7 +68,7 @@ async def show_days_matter(parent, name, days, time_tuple, handle_event_cb):
     container.set_style_border_width(0, 0)
     container.set_scrollbar_mode(lv.SCROLLBAR_MODE.OFF)
     container.set_size(base.SCR_WIDTH, base.SCR_HEIGHT)
-    container.set_style_bg_color(lv.color_hex3(0xFFFFFF), 0)
+    container.set_style_bg_color(lv.color_hex3(STYLES[style]["bg"]), 0)
     container.add_event_cb(handle_event_cb, lv.EVENT.ALL, None)
 
     name_obj = lv.obj(container)
@@ -57,14 +85,14 @@ async def show_days_matter(parent, name, days, time_tuple, handle_event_cb):
     name_label.set_long_mode(lv.label.LONG.SCROLL_CIRCULAR)
     name_label.set_style_text_font(lv.font_ascii_bold_28, 0)
     name_label.set_style_text_align(lv.TEXT_ALIGN.CENTER, 0)
-    name_label.set_style_text_color(lv.color_hex(0xFFFFFF), 0)
+    name_label.set_style_text_color(lv.color_hex(STYLES[style]["text"]), 0)
     name_label.align(lv.ALIGN.CENTER, 0, 0)
 
     tip_label = lv.label(container)
     tip_label.set_text(tip_text)
     tip_label.set_size(base.SCR_WIDTH, 40)
     tip_label.set_style_text_font(lv.font_ascii_14, 0)
-    tip_label.set_style_text_color(lv.color_hex(0xC0C0C0), 0)
+    tip_label.set_style_text_color(lv.color_hex(STYLES[style]["tip"]), 0)
     tip_label.set_style_text_align(lv.TEXT_ALIGN.CENTER, 0)
     tip_label.align_to(name_obj, lv.ALIGN.OUT_BOTTOM_MID, 0, 0)
 
@@ -78,14 +106,14 @@ async def show_days_matter(parent, name, days, time_tuple, handle_event_cb):
         days_label.set_style_text_font(lv.font_ascii_bold_48, 0)
     else:
         days_label.set_style_text_font(lv.font_numbers_92, 0)
-    days_label.set_style_text_color(lv.color_hex(0x303030), 0)
+    days_label.set_style_text_color(lv.color_hex(STYLES[style]["days"]), 0)
     days_label.align(lv.ALIGN.CENTER, 0, 15)
 
     # Date information at bottom
     time_tuple_label = lv.label(container)
     time_tuple_label.set_text(time_tuple_text)
     time_tuple_label.set_style_text_font(lv.font_ascii_18, 0)
-    time_tuple_label.set_style_text_color(lv.color_hex(0xC0C0C0), 0)
+    time_tuple_label.set_style_text_color(lv.color_hex(STYLES[style]["tip"]), 0)
     time_tuple_label.set_style_text_align(lv.TEXT_ALIGN.CENTER, 0)
     time_tuple_label.align(lv.ALIGN.BOTTOM_MID, 0, -10)
 
@@ -105,6 +133,8 @@ async def _show_one_days(parent, days_info, handle_event_cb):
     Returns:
         Button object representing the day item
     """
+    style = app_mgr.config().get("style", "light")
+    print(style)
     # Main button container for the day item
     tasks_btn = lv.button(parent)
     tasks_btn.set_size(base.SCR_WIDTH, 40)
@@ -112,14 +142,14 @@ async def _show_one_days(parent, days_info, handle_event_cb):
     tasks_btn.set_style_radius(0, 0)
     tasks_btn.remove_style(None, lv.STATE.PRESSED)
     tasks_btn.remove_style(None, lv.STATE.FOCUS_KEY)
-    tasks_btn.set_style_bg_color(lv.color_hex(0xFFFFFF), 0)
+    tasks_btn.set_style_bg_color(lv.color_hex(STYLES[style]["bg"]), 0)
     tasks_btn.add_event_cb(handle_event_cb, lv.EVENT.ALL, None)
 
     # Event name label
     lv_label = lv.label(tasks_btn)
     lv_label.set_text(days_info["name"])
     lv_label.set_style_text_font(lv.font_ascii_18, 0)
-    lv_label.set_style_text_color(lv.color_hex(0x000000), lv.PART.MAIN)
+    lv_label.set_style_text_color(lv.color_hex(STYLES[style]["text"]), lv.PART.MAIN)
     lv_label.align_to(tasks_btn, lv.ALIGN.LEFT_MID, 0, 0)
     lv_label.set_size(200, 40)
     lv_label.set_long_mode(lv.label.LONG.DOT)
@@ -128,21 +158,23 @@ async def _show_one_days(parent, days_info, handle_event_cb):
     if days_info["days_remaining"] < 0:
         # Past event - orange theme
         days_text = f"{abs(days_info['days_remaining'])}"
-        days_color = lv.color_hex(0xFFA500)
-        days_text_color = lv.color_hex(0xFF8C00)
+        days_color = lv.color_hex(PAST_DAYS_COLOR_LIGHT)
+        days_text_color = lv.color_hex(PAST_DAYS_COLOR)
         days_text_width = 65
     elif days_info['days_remaining'] == 0:
         # Today - blue theme with special text
         days_text = "Today"
-        days_color = lv.color_hex(0x00A5FF)
-        days_text_color = lv.color_hex(0x008CFF)
+        days_color = lv.color_hex(CURRENT_DAYS_COLOR_LIGHT)
+        days_text_color = lv.color_hex(CURRENT_DAYS_COLOR)
         days_text_width = 125
     else:
         # Future event - blue theme
         days_text = f"{days_info['days_remaining']}"
-        days_color = lv.color_hex(0x00A5FF)
-        days_text_color = lv.color_hex(0x008CFF)
+        days_color = lv.color_hex(CURRENT_DAYS_COLOR_LIGHT)
+        days_text_color = lv.color_hex(CURRENT_DAYS_COLOR)
         days_text_width = 65
+
+
 
     # Create "Days" suffix label for numeric days
     days_text_obj = None
@@ -158,7 +190,7 @@ async def _show_one_days(parent, days_info, handle_event_cb):
         days_text_label = lv.label(days_text_obj)
         days_text_label.set_text("Day" if abs(days_info['days_remaining']) == 1 else "Days")
         days_text_label.set_style_text_font(lv.font_ascii_22, 0)
-        days_text_label.set_style_text_color(lv.color_hex(0x000000), 0)
+        days_text_label.set_style_text_color(lv.color_hex(STYLES[style]["text"]), 0)
         days_text_label.align(lv.ALIGN.CENTER, 0, 0)
 
     # Days number display
@@ -176,7 +208,7 @@ async def _show_one_days(parent, days_info, handle_event_cb):
     days_label = lv.label(days_obj)
     days_label.set_text(days_text)
     days_label.set_style_text_font(lv.font_ascii_bold_22, 0)
-    days_label.set_style_text_color(lv.color_hex(0x000000), 0)
+    days_label.set_style_text_color(lv.color_hex(STYLES[style]["text"]), 0)
     days_label.align(lv.ALIGN.CENTER, 0, 0)
 
     return tasks_btn
@@ -194,9 +226,10 @@ async def show_days_list(parent, last_index, days_list, handle_event_cb):
     if not parent: return
     parent.clean()
     app_mgr.enter_root_page()
+    style = app_mgr.config().get("style", "light")
 
     # Set list background color
-    parent.set_style_bg_color(lv.color_hex(0xEFEFEF), 0)
+    parent.set_style_bg_color(lv.color_hex(STYLES[style]["parent_bg"]), 0)
 
     # Create header with title
     title_obj = lv.obj(parent)
@@ -217,7 +250,7 @@ async def show_days_list(parent, last_index, days_list, handle_event_cb):
     # Header separator line
     line_points = [{"x": 0, "y": 0}, {"x": base.SCR_WIDTH, "y": 0}]
     line = lv.line(parent)
-    line.set_style_line_color(lv.color_hex(0x000000), 0)
+    line.set_style_line_color(lv.color_hex(STYLES[style]["list_line"]), 0)
     line.set_points(line_points, len(line_points))  # Set the points
     line.align(lv.ALIGN.TOP_LEFT, 0, 39)
 
@@ -227,7 +260,7 @@ async def show_days_list(parent, last_index, days_list, handle_event_cb):
     list_container.remove_style(None, 0)
     list_container.set_size(base.SCR_WIDTH, base.SCR_HEIGHT - 40)
     list_container.remove_style(None, lv.PART.SCROLLBAR)
-    list_container.set_style_bg_color(lv.color_hex3(0xFFFFFF), 0)
+    list_container.set_style_bg_color(lv.color_hex3(STYLES[style]["list_container"]), 0)
     list_container.align(lv.ALIGN.TOP_LEFT, 0, 40)
 
     _algin_target = parent
@@ -257,7 +290,7 @@ async def show_days_list(parent, last_index, days_list, handle_event_cb):
             line = lv.line(day_obj)
             line.set_style_line_width(1, 0)
             line.set_points(line_points, len(line_points))  # Set the points
-            line.set_style_line_color(lv.color_hex(0x000000), lv.PART.MAIN)
+            line.set_style_line_color(lv.color_hex(STYLES[style]["list_line"]), lv.PART.MAIN)
             line.align(lv.ALIGN.BOTTOM_LEFT, -12, 7)
 
     # Set focus and selection
@@ -266,7 +299,7 @@ async def show_days_list(parent, last_index, days_list, handle_event_cb):
         last_index = 0
     lv.group_focus_obj(list_container.get_child(last_index))
     list_container.get_child(last_index).scroll_to_view(lv.ANIM.OFF)
-    list_container.get_child(last_index).set_style_bg_color(lv.color_hex(0xCBCBCB), 0)
+    list_container.get_child(last_index).set_style_bg_color(lv.color_hex(STYLES[style]["selected"]), 0)
 
 async def show_error_msg(parent, msg):
     """
