@@ -56,7 +56,14 @@ def get_settings_json():
             "caption": "Default Target Date",
             "name": "preset_target_date",
             "options":[(data[1], data[0]) for data in base.PRESET_TARGET_LIST],
-        },]
+        },{ 
+            "type": "select",
+            "default": "Light",
+            "caption": "UI style",
+            "name": "style",
+            "tip": "Select what color style you want",
+            "options":[("Light", "light"), ("Dark", "dark")],
+        }]
     }
 
 def get_target_time_list():
@@ -113,7 +120,8 @@ def handle_event_cb(e):
     Handle events in the list view.
     Manages item selection, focus, and navigation between views.
     """
-    global last_index, ui_state
+    global last_index, ui_state, app_mgr
+    style = app_mgr.config().get("style", "light")
     code = e.get_code()
     target = e.get_target_obj()
     if code == lv.EVENT.CLICKED:
@@ -124,11 +132,11 @@ def handle_event_cb(e):
         asyncio.create_task(ui.show_days_matter(scr, target_time_list[index]["name"], target_time_list[index]["days_remaining"], target_time_list[index]["show_time_tuple"], draw_event_handler))
     elif code == lv.EVENT.FOCUSED:
         # Highlight focused item
-        target.set_style_bg_color(lv.color_hex(0xCBCBCB), 0)
+        target.set_style_bg_color(lv.color_hex(ui.STYLES[style]["focused"]), 0)
         target.scroll_to_view(lv.ANIM.OFF)
     elif code == lv.EVENT.DEFOCUSED:
         # Remove highlight from unfocused item
-        target.set_style_bg_color(lv.color_hex(0xFFFFFF), 0)
+        target.set_style_bg_color(lv.color_hex(ui.STYLES[style]["defocused"]), 0)
         target.scroll_to_view(lv.ANIM.OFF)
 
 async def update_ui(now):
